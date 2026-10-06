@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>দুধ ও গুদের গ্যালারি | আমার প্রিয় সংগ্রহ</title>
+    <title>দুধ ও গুদের গ্যালারি | আমার প্রিয় সংগ্রহ</title>
     <style>
         :root {
             --bg-color: #050505;
@@ -16,6 +16,8 @@
             --gold-gradient: linear-gradient(45deg, #d4af37, #f2d06b);
         }
 
+        * { box-sizing: border-box; }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
@@ -25,14 +27,13 @@
             overflow-x: hidden;
         }
 
-        /* Header Style */
+        /* ---------- Header ---------- */
         header {
             text-align: center;
             padding: 60px 20px;
             background: linear-gradient(to bottom, #1a1a1a, var(--bg-color));
             border-bottom: 1px solid rgba(212, 175, 55, 0.3);
         }
-
         header h1 {
             font-size: 2.5rem;
             color: var(--accent-gold);
@@ -41,7 +42,6 @@
             text-transform: uppercase;
             text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
         }
-
         header p {
             font-size: 1.1rem;
             color: var(--accent-silver);
@@ -49,80 +49,321 @@
             font-style: italic;
             opacity: 0.8;
         }
-<!-- Modals for Input -->
-        <div id="videoModal" class="overlay">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeModal('videoModal')">&times;</span>
-                <h2 style="color: var(--accent-gold);">নতুন ভিডিও যোগ করুন</h2>
-                <div class="form-group">
-                    <label>ভিডিওর নাম</label>
-                    <input type="text" id="vid-name" placeholder="নাম লিখুন...">
-                </div>
-                <div class="form-group">
-                    <label>ভিডিও ফাইল</label>
-                    <input type="file" id="vid-file" accept="video/*">
-                </div>
-                <div class="form-group">
-                    <label>সাবটাইটেল ফাইল (.vtt)</label>
-                    <input type="file" id="vid-sub" accept=".vtt">
-                </div>
-                <button class="btn" style="width: 100%;" onclick="saveVideo()">সংগ্রহে যোগ করুন</button>
-            </div>
+
+        /* ---------- Layout ---------- */
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--accent-gold);
+            margin: 40px 0 20px;
+            border-left: 4px solid var(--accent-gold);
+            padding-left: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        /* ---------- Grid & Card ---------- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-gold);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+        }
+        .card img,
+        .card .card-thumb {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            display: block;
+        }
+        .card-info {
+            padding: 12px;
+            text-align: center;
+        }
+        .card-info h3,
+        .card-info .card-name {
+            display: block;
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card-info .card-date,
+        .card-info .card-count {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* ---------- Buttons ---------- */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: transparent;
+            color: var(--accent-gold);
+            border: 1px solid var(--accent-gold);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+        .btn:hover {
+            background: var(--accent-gold);
+            color: var(--bg-color);
+        }
+
+        /* ---------- Overlay / Modal ---------- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 600px;
+            border-radius: 25px;
+            padding: 30px;
+            border: 1px solid var(--accent-gold);
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        /* ---------- Form ---------- */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--accent-silver);
+            font-size: 0.9rem;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            color: white;
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--accent-gold);
+            outline: none;
+        }
+
+        /* ---------- Video Player ---------- */
+        .video-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            position: relative;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0,0,0,1);
+        }
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        /* ---------- Lightbox ---------- */
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 10px;
+            box-shadow: 0 0 20px var(--accent-gold);
+        }
+
+        #lightboxContent {
+            width: 90%;
+            max-width: 1000px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .set-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .set-item img {
+            width: 100%;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .set-item img:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= HEADER ================= -->
+    <header>
+        <h1>দুধ ও গুদের গ্যালারি</h1>
+        <p>আমার প্রিয় সংগ্রহ</p>
+    </header>
+
+    <!-- ================= MAIN ================= -->
+    <div class="container">
+        <div class="controls">
+            <button class="btn" onclick="openModal('videoModal')">＋ নতুন ভিডিও</button>
+            <button class="btn" onclick="openModal('setModal')">＋ নতুন ফটো সেট</button>
+            <button class="btn" onclick="openModal('settingsModal')">⚙ সেটিংস</button>
         </div>
 
-        <div id="setModal" class="overlay">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeModal('setModal')">&times;</span>
-                <h2 style="color: var(--accent-gold);">নতুন ফটো সেট</h2>
-                <div class="form-group">
-                    <label>সেটের নাম</label>
-                    <input type="text" id="set-name" placeholder="সেটের নাম দিন...">
-                </div>
-                <div class="form-group">
-                    <label>ফটো এবং ভিডিও সিলেক্ট করুন</label>
-                    <input type="file" id="set-files" multiple accept="image/*,video/*">
-                </div>
-                <button class="btn" style="width: 100%;" onclick="savePhotoSet()">সেট তৈরি করুন</button>
-            </div>
-        </div>
-
-        <div id="settingsModal" class="overlay">
-            <div class="modal-content">
-                <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
-                <h2 style="color: var(--accent-gold);">অ্যাপ সেটিংস</h2>
-                <div class="form-group">
-                    <label>লেআউট পছন্দ করুন</label>
-                    <select id="layout-pref" style="width: 100%; padding: 10px; background: #1a1a1a; color: white; border-radius: 10px;">
-                        <option value="A">অপশন A: ভিডিও উপরে, ফটো সেট নিচে</option>
-                        <option value="B">অপশন B: ফটো সেট উপরে, ভিডিও নিচে</option>
-                    </select>
-                </div>
-                <button class="btn" style="width: 100%;" onclick="saveSettings()">সেটিংস সেভ করুন</button>
-            </div>
-        </div>
-
-        <!-- Fullscreen Video Player Overlay -->
-        <div id="playerOverlay" class="overlay">
-            <span class="close-modal" onclick="closePlayer()" style="top: 20px; right: 20px; z-index: 1001;">&times;</span>
-            <div class="video-wrapper">
-                <video id="mainVideoPlayer" controls>
-                    <track id="videoTrack" kind="subtitles" srclang="bn" label="Bengali">
-                </video>
-            </div>
-        </div>
-<!-- Fullscreen Photo/Video Lightbox -->
-        <div id="lightboxOverlay" class="overlay">
-            <span class="close-modal" onclick="closeLightbox()" style="top: 20px; right: 20px; z-index: 1001;">&times;</span>
-            <div id="lightboxContent" style="width: 90%; max-width: 1000px; display: flex; justify-content: center; align-items: center;">
-                <!-- Content injected by JS -->
-            </div>
+        <div id="main-content">
+            <!-- Dynamic content -->
         </div>
     </div>
 
+    <!-- ================= MODALS ================= -->
+
+    <!-- Video Add Modal -->
+    <div id="videoModal" class="overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('videoModal')">&times;</span>
+            <h2 style="color: var(--accent-gold);">নতুন ভিডিও যোগ করুন</h2>
+            <div class="form-group">
+                <label>ভিডিওর নাম</label>
+                <input type="text" id="vid-name" placeholder="নাম লিখুন...">
+            </div>
+            <div class="form-group">
+                <label>ভিডিও ফাইল</label>
+                <input type="file" id="vid-file" accept="video/*">
+            </div>
+            <div class="form-group">
+                <label>সাবটাইটেল ফাইল (.vtt)</label>
+                <input type="file" id="vid-sub" accept=".vtt">
+            </div>
+            <button class="btn" style="width: 100%;" onclick="saveVideo()">সংগ্রহে যোগ করুন</button>
+        </div>
+    </div>
+
+    <!-- Photo Set Add Modal -->
+    <div id="setModal" class="overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('setModal')">&times;</span>
+            <h2 style="color: var(--accent-gold);">নতুন ফটো সেট</h2>
+            <div class="form-group">
+                <label>সেটের নাম</label>
+                <input type="text" id="set-name" placeholder="সেটের নাম দিন...">
+            </div>
+            <div class="form-group">
+                <label>ফটো এবং ভিডিও সিলেক্ট করুন</label>
+                <input type="file" id="set-files" multiple accept="image/*,video/*">
+            </div>
+            <button class="btn" style="width: 100%;" onclick="savePhotoSet()">সেট তৈরি করুন</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="overlay">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
+            <h2 style="color: var(--accent-gold);">অ্যাপ সেটিংস</h2>
+            <div class="form-group">
+                <label>লেআউট পছন্দ করুন</label>
+                <select id="layout-pref">
+                    <option value="A">অপশন A: ভিডিও উপরে, ফটো সেট নিচে</option>
+                    <option value="B">অপশন B: ফটো সেট উপরে, ভিডিও নিচে</option>
+                </select>
+            </div>
+            <button class="btn" style="width: 100%;" onclick="saveSettings()">সেটিংস সেভ করুন</button>
+        </div>
+    </div>
+
+    <!-- Fullscreen Video Player -->
+    <div id="playerOverlay" class="overlay">
+        <span class="close-modal" onclick="closePlayer()" style="top: 20px; right: 20px; z-index: 1001;">&times;</span>
+        <div class="video-wrapper">
+            <video id="mainVideoPlayer" controls>
+                <track id="videoTrack" kind="subtitles" srclang="bn" label="Bengali">
+            </video>
+        </div>
+    </div>
+
+    <!-- Fullscreen Photo/Video Lightbox -->
+    <div id="lightboxOverlay" class="overlay">
+        <span class="close-modal" onclick="closeLightbox()" style="top: 20px; right: 20px; z-index: 1001;">&times;</span>
+        <div id="lightboxContent">
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+
+    <!-- ================= SCRIPT ================= -->
     <script>
-        /**
-         * DATABASE LOGIC (IndexedDB)
-         */
+        /* ---------- IndexedDB ---------- */
         const DB_NAME = "GalleryDB";
         const DB_VERSION = 1;
         let db;
@@ -131,16 +372,16 @@
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-                request.onupgradenev = (event) => {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains('videos')) {
-                        db.createObjectStore('videos', { keyPath: 'id', autoIncrement: true });
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('videos')) {
+                        database.createObjectStore('videos', { keyPath: 'id' });
                     }
-                    if (!db.objectStoreNames.contains('photoSets')) {
-                        db.createObjectStore('photoSets', { keyPath: 'id', autoIncrement: true });
+                    if (!database.objectStoreNames.contains('photoSets')) {
+                        database.createObjectStore('photoSets', { keyPath: 'id' });
                     }
-                    if (!db.objectStoreNames.contains('settings')) {
-                        db.createObjectStore('settings', { keyPath: 'key' });
+                    if (!database.objectStoreNames.contains('settings')) {
+                        database.createObjectStore('settings', { keyPath: 'key' });
                     }
                 };
 
@@ -148,49 +389,291 @@
                     db = event.target.result;
                     resolve(db);
                 };
-
                 request.onerror = (event) => reject("DB Error: " + event.target.errorCode);
             });
         };
 
-        // Helper to save data
-        const saveData = (storeName, data) => {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], "readwrite");
-                const store = transaction.objectStore(storeName);
-                const request = store.add(data);
-                request.onsuccess = () => resolve();
-                request.onerror = () => reject();
-            });
-        };
+        const saveData = (storeName, data) => new Promise((resolve, reject) => {
+            const tx = db.transaction([storeName], "readwrite");
+            const store = tx.objectStore(storeName);
+            const req = store.put(data);
+            req.onsuccess = () => resolve();
+            req.onerror = () => reject(req.error);
+        });
 
-        // Helper to get all data
-        const getAllData = (storeName) => {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction([storeName], "readonly");
-                const store = transaction.objectStore(storeName);
-                const request = store.getAll();
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject();
-            });
-        };
+        const getAllData = (storeName) => new Promise((resolve, reject) => {
+            const tx = db.transaction([storeName], "readonly");
+            const store = tx.objectStore(storeName);
+            const req = store.getAll();
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
 
-        // Helper to get specific setting
-        const getSetting = (key) => {
-            return new Promise((resolve) => {
-                const transaction = db.transaction(['settings'], "readonly");
-                const store = transaction.objectStore('settings');
-                const request = store.get(key);
-                request.onsuccess = () => resolve(request.result ? request.result.value : null);
-            });
-        };
+        const getSetting = (key) => new Promise((resolve) => {
+            const tx = db.transaction(['settings'], "readonly");
+            const store = tx.objectStore('settings');
+            const req = store.get(key);
+            req.onsuccess = () => resolve(req.result ? req.result.value : null);
+        });
 
-        // Helper to set specific setting
-        const setSetting = (key, value) => {
-            return new Promise((resolve) => {
-                const transaction = db.transaction(['settings'], "readwrite");
-                const store = transaction.objectStore('settings');
-                store.put({ key, value });
-                transaction.oncomplete = () => resolve();
+        const setSetting = (key, value) => new Promise((resolve) => {
+            const tx = db.transaction(['settings'], "readwrite");
+            const store = tx.objectStore('settings');
+            store.put({ key, value });
+            tx.oncomplete = () => resolve();
+        });
+
+        /* ---------- Thumbnail generation ---------- */
+        const generateVideoThumbnail = (file) => new Promise((resolve) => {
+            const video = document.createElement('video');
+            video.src = URL.createObjectURL(file);
+            video.muted = true;
+            video.playsInline = true;
+
+            const cleanup = () => URL.revokeObjectURL(video.src);
+
+            video.onloadeddata = () => {
+                // Try to seek to 1s, fallback to 0
+                video.currentTime = Math.min(1, video.duration || 0);
+            };
+            video.onseeked = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth || 320;
+                canvas.height = video.videoHeight || 180;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                cleanup();
+                resolve(dataUrl);
+            };
+            video.onerror = () => {
+                cleanup();
+                resolve(""); // return empty thumb if error
+            };
+        });
+
+        /* ---------- UI Controls ---------- */
+        const openModal  = (id) => document.getElementById(id).style.display = 'flex';
+        const closeModal = (id) => document.getElementById(id).style.display = 'none';
+
+        /* ---------- Save Video ---------- */
+        async function saveVideo() {
+            const name = document.getElementById('vid-name').value.trim();
+            const fileInput = document.getElementById('vid-file');
+            const subInput = document.getElementById('vid-sub');
+
+            if (!name || !fileInput.files[0]) {
+                alert("অনুগ্রহ করে নাম এবং ভিডিও ফাইল সিলেক্ট করুন।");
+                return;
+            }
+
+            const videoFile = fileInput.files[0];
+            const subFile = subInput.files[0];
+
+            const thumbnail = await generateVideoThumbnail(videoFile);
+            const videoUrl = URL.createObjectURL(videoFile);
+            const subUrl = subFile ? URL.createObjectURL(subFile) : "";
+
+            const videoData = {
+                id: Date.now(),
+                name: name,
+                url: videoUrl,
+                subtitleUrl: subUrl,
+                thumbnail: thumbnail,
+                date: new Date().toLocaleDateString()
+            };
+
+            await saveData('videos', videoData);
+            closeModal('videoModal');
+            renderContent();
+
+            document.getElementById('vid-name').value = "";
+            document.getElementById('vid-file').value = "";
+            document.getElementById('vid-sub').value = "";
+        }
+
+        /* ---------- Save Photo Set ---------- */
+        async function savePhotoSet() {
+            const name = document.getElementById('set-name').value.trim();
+            const files = document.getElementById('set-files').files;
+
+            if (!name || files.length === 0) {
+                alert("অনুগ্রহ করে নাম এবং অন্তত একটি ফাইল সিলেক্ট করুন।");
+                return;
+            }
+
+            const mediaItems = [];
+            for (const file of files) {
+                let thumb;
+                if (file.type.startsWith('video/')) {
+                    thumb = await generateVideoThumbnail(file);
+                } else {
+                    thumb = URL.createObjectURL(file);
+                }
+                mediaItems.push({
+                    url: URL.createObjectURL(file),
+                    type: file.type,
+                    thumbnail: thumb
+                });
+            }
+
+            const setData = {
+                id: Date.now(),
+                name: name,
+                items: mediaItems,
+                cover: mediaItems[0].thumbnail
+            };
+
+            await saveData('photoSets', setData);
+            closeModal('setModal');
+            renderContent();
+
+            document.getElementById('set-name').value = "";
+            document.getElementById('set-files').value = "";
+        }
+
+        /* ---------- Render ---------- */
+        async function renderContent() {
+            const mainContent = document.getElementById('main-content');
+            const layoutPref = (await getSetting('layout-pref')) || 'A';
+
+            const videos = await getAllData('videos');
+            const photoSets = await getAllData('photoSets');
+
+            const sections = [];
+            if (layoutPref === 'A') {
+                sections.push({ type: 'videos', data: videos,   title: 'ভিডিও কালেকশন' });
+                sections.push({ type: 'photos', data: photoSets, title: 'ফটো সেট কালেকশন' });
+            } else {
+                sections.push({ type: 'photos', data: photoSets, title: 'ফটো সেট কালেকশন' });
+                sections.push({ type: 'videos', data: videos,   title: 'ভিডিও কালেকশন' });
+            }
+
+            let html = "";
+            sections.forEach(section => {
+                html += `<div class="section-container">
+                            <h2 class="section-title">${section.title}</h2>
+                            <div class="grid">`;
+
+                if (section.type === 'videos') {
+                    section.data.forEach(vid => {
+                        html += `
+                            <div class="card" onclick="playVideo(${vid.id})">
+                                <img class="card-thumb" src="${vid.thumbnail || ''}" alt="${vid.name}">
+                                <div class="card-info">
+                                    <span class="card-name">${vid.name}</span>
+                                    <span class="card-date">${vid.date}</span>
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    section.data.forEach(set => {
+                        html += `
+                            <div class="card" onclick="openSet(${set.id})">
+                                <img class="card-thumb" src="${set.cover || ''}" alt="${set.name}">
+                                <div class="card-info">
+                                    <span class="card-name">${set.name}</span>
+                                    <span class="card-count">${set.items.length} আইটেম</span>
+                                </div>
+                            </div>`;
+                    });
+                }
+                html += `</div></div>`;
             });
-        };
+
+            mainContent.innerHTML = html;
+        }
+
+        /* ---------- Actions ---------- */
+        async function playVideo(id) {
+            const videos = await getAllData('videos');
+            const vid = videos.find(v => v.id === id);
+            if (!vid) return;
+
+            const player = document.getElementById('mainVideoPlayer');
+            const track = document.getElementById('videoTrack');
+
+            player.src = vid.url;
+            track.src = vid.subtitleUrl || "";
+
+            openModal('playerOverlay');
+            player.play().catch(() => {});
+        }
+
+        async function openSet(id) {
+            const sets = await getAllData('photoSets');
+            const set = sets.find(s => s.id === id);
+            if (!set) return;
+
+            const lightbox = document.getElementById('lightboxContent');
+            let contentHtml = `<div class="set-grid">`;
+            set.items.forEach((item, index) => {
+                contentHtml += `
+                    <div class="set-item" onclick="viewItem(${id}, ${index})">
+                        <img src="${item.thumbnail}" alt="">
+                    </div>`;
+            });
+            contentHtml += `</div>`;
+
+            lightbox.innerHTML = contentHtml;
+            openModal('lightboxOverlay');
+        }
+
+        // Now looks up item by id/index — avoids URL quoting issues
+        async function viewItem(setId, index) {
+            const sets = await getAllData('photoSets');
+            const set = sets.find(s => s.id === setId);
+            if (!set) return;
+
+            const item = set.items[index];
+            const lightbox = document.getElementById('lightboxContent');
+
+            if (item.type.startsWith('video/')) {
+                lightbox.innerHTML = `<video src="${item.url}" controls autoplay style="max-width:100%; max-height:80vh;"></video>`;
+            } else {
+                lightbox.innerHTML = `<img src="${item.url}" class="lightbox-img" alt="">`;
+            }
+        }
+
+        async function saveSettings() {
+            const pref = document.getElementById('layout-pref').value;
+            await setSetting('layout-pref', pref);
+            closeModal('settingsModal');
+            renderContent();
+        }
+
+        function closePlayer() {
+            const player = document.getElementById('mainVideoPlayer');
+            player.pause();
+            player.removeAttribute('src');
+            player.load();
+            closeModal('playerOverlay');
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightboxContent').innerHTML = "";
+            closeModal('lightboxOverlay');
+        }
+
+        /* ---------- Init ---------- */
+        window.addEventListener('load', async () => {
+            try {
+                await initDB();
+                const pref = await getSetting('layout-pref');
+                if (pref) document.getElementById('layout-pref').value = pref;
+                await renderContent();
+            } catch (error) {
+                console.error("Initialization failed:", error);
+                alert("Database initialization failed. Please refresh the page.");
+            }
+        });
+
+        // Close modal when clicking outside content
+        window.addEventListener('click', (event) => {
+            if (event.target.classList.contains('overlay')) {
+                event.target.style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
