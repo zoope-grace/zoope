@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>দুধ ও গুদের গ্যালারি | আমার প্রিয় সংগ্রহ</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: #121212;
+            --accent-gold: #d4af37;
+            --accent-silver: #c0c0c0;
+            --text-main: #e0e0e0;
+            --text-dim: #888;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --gold-gradient: linear-gradient(45deg, #d4af37, #f2d06b);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Header Style */
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(to bottom, #1a1a1a, var(--bg-color));
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            margin: 0;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--accent-silver);
+            margin: 10px 0 0;
+            font-style: italic;
+            opacity: 0.8;
+        }
+<!-- Modals for Input -->
+        <div id="videoModal" class="overlay">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal('videoModal')">&times;</span>
+                <h2 style="color: var(--accent-gold);">নতুন ভিডিও যোগ করুন</h2>
+                <div class="form-group">
+                    <label>ভিডিওর নাম</label>
+                    <input type="text" id="vid-name" placeholder="নাম লিখুন...">
+                </div>
+                <div class="form-group">
+                    <label>ভিডিও ফাইল</label>
+                    <input type="file" id="vid-file" accept="video/*">
+                </div>
+                <div class="form-group">
+                    <label>সাবটাইটেল ফাইল (.vtt)</label>
+                    <input type="file" id="vid-sub" accept=".vtt">
+                </div>
+                <button class="btn" style="width: 100%;" onclick="saveVideo()">সংগ্রহে যোগ করুন</button>
+            </div>
+        </div>
+
+        <div id="setModal" class="overlay">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal('setModal')">&times;</span>
+                <h2 style="color: var(--accent-gold);">নতুন ফটো সেট</h2>
+                <div class="form-group">
+                    <label>সেটের নাম</label>
+                    <input type="text" id="set-name" placeholder="সেটের নাম দিন...">
+                </div>
+                <div class="form-group">
+                    <label>ফটো এবং ভিডিও সিলেক্ট করুন</label>
+                    <input type="file" id="set-files" multiple accept="image/*,video/*">
+                </div>
+                <button class="btn" style="width: 100%;" onclick="savePhotoSet()">সেট তৈরি করুন</button>
+            </div>
+        </div>
+
+        <div id="settingsModal" class="overlay">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeModal('settingsModal')">&times;</span>
+                <h2 style="color: var(--accent-gold);">অ্যাপ সেটিংস</h2>
+                <div class="form-group">
+                    <label>লেআউট পছন্দ করুন</label>
+                    <select id="layout-pref" style="width: 100%; padding: 10px; background: #1a1a1a; color: white; border-radius: 10px;">
+                        <option value="A">অপশন A: ভিডিও উপরে, ফটো সেট নিচে</option>
+                        <option value="B">অপশন B: ফটো সেট উপরে, ভিডিও নিচে</option>
+                    </select>
+                </div>
+                <button class="btn" style="width: 100%;" onclick="saveSettings()">সেটিংস সেভ করুন</button>
+            </div>
+        </div>
+
+        <!-- Fullscreen Video Player Overlay -->
+        <div id="playerOverlay" class="overlay">
+            <span class="close-modal" onclick="closePlayer()" style="top: 20px; right: 20px; z-index: 1001;">&times;</span>
+            <div class="video-wrapper">
+                <video id="mainVideoPlayer" controls>
+                    <track id="videoTrack" kind="subtitles" srclang="bn" label="Bengali">
+                </video>
+            </div>
+        </div>
+<!-- Fullscreen Photo/Video Lightbox -->
+        <div id="lightboxOverlay" class="overlay">
+            <span class="close-modal" onclick="closeLightbox()" style="top: 20px; right: 20px; z-index: 1001;">&times;</span>
+            <div id="lightboxContent" style="width: 90%; max-width: 1000px; display: flex; justify-content: center; align-items: center;">
+                <!-- Content injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * DATABASE LOGIC (IndexedDB)
+         */
+        const DB_NAME = "GalleryDB";
+        const DB_VERSION = 1;
+        let db;
+
+        const initDB = () => {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onupgradenev = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('videos')) {
+                        db.createObjectStore('videos', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('photoSets')) {
+                        db.createObjectStore('photoSets', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('settings')) {
+                        db.createObjectStore('settings', { keyPath: 'key' });
+                    }
+                };
+
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+
+                request.onerror = (event) => reject("DB Error: " + event.target.errorCode);
+            });
+        };
+
+        // Helper to save data
+        const saveData = (storeName, data) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], "readwrite");
+                const store = transaction.objectStore(storeName);
+                const request = store.add(data);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject();
+            });
+        };
+
+        // Helper to get all data
+        const getAllData = (storeName) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([storeName], "readonly");
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject();
+            });
+        };
+
+        // Helper to get specific setting
+        const getSetting = (key) => {
+            return new Promise((resolve) => {
+                const transaction = db.transaction(['settings'], "readonly");
+                const store = transaction.objectStore('settings');
+                const request = store.get(key);
+                request.onsuccess = () => resolve(request.result ? request.result.value : null);
+            });
+        };
+
+        // Helper to set specific setting
+        const setSetting = (key, value) => {
+            return new Promise((resolve) => {
+                const transaction = db.transaction(['settings'], "readwrite");
+                const store = transaction.objectStore('settings');
+                store.put({ key, value });
+                transaction.oncomplete = () => resolve();
+            });
+        };
