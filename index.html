@@ -1,338 +1,68 @@
-cat > SIDDIK_ALL.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SIDDIK'S SIMON KITTY</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#0a0000;
-  --card:#150505;
-  --red:#ff0033;
-  --red2:#ff3355;
-  --dark-red:#8b0000;
-  --text:#ffffff;
-  --muted:#a08080;
-}
-html{scroll-behavior:smooth}
-body{
-  background:var(--bg);color:var(--text);
-  font-family:-apple-system,'Segoe UI',Roboto,sans-serif;
-  min-height:100vh;overflow-x:hidden;
-}
-body::before{
-  content:'';position:fixed;inset:0;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(255,0,51,0.15) 0%, transparent 45%),
-    radial-gradient(circle at 80% 90%, rgba(139,0,0,0.2) 0%, transparent 50%);
-  pointer-events:none;z-index:0;
-}
-header{
-  position:relative;z-index:2;padding:50px 20px 30px;
-  text-align:center;border-bottom:1px solid rgba(255,0,51,0.2);
-  background:linear-gradient(180deg, rgba(255,0,51,0.08) 0%, transparent 100%);
-  backdrop-filter:blur(12px);
-}
-.header-inner{max-width:800px;margin:0 auto}
-h1{
-  font-size:clamp(1.6em,6vw,3em);font-weight:900;letter-spacing:4px;
-  text-transform:uppercase;
-  background:linear-gradient(135deg,#ff0033 0%,#ff6688 50%,#8b0000 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;margin-bottom:8px;
-  text-shadow:0 0 60px rgba(255,0,51,0.5);
-  animation:glow 3s ease-in-out infinite alternate;
-}
-@keyframes glow{
-  from{filter:drop-shadow(0 0 10px rgba(255,0,51,0.4))}
-  to{filter:drop-shadow(0 0 25px rgba(255,0,51,0.9))}
-}
-.tagline{
-  font-size:clamp(0.85em,2.5vw,1.1em);letter-spacing:6px;
-  color:var(--muted);text-transform:uppercase;font-weight:300;
-  margin-bottom:18px;
-}
-.divider{
-  display:flex;align-items:center;justify-content:center;
-  gap:14px;margin:14px auto 18px;max-width:400px;
-}
-.divider span{flex:1;height:1px;
-  background:linear-gradient(90deg,transparent,var(--red),transparent)}
-.divider .diamond{
-  width:8px;height:8px;background:var(--red);
-  transform:rotate(45deg);box-shadow:0 0 12px var(--red);
-}
-.stats{
-  color:var(--muted);font-size:0.8em;letter-spacing:2px;
-  margin-bottom:18px;text-transform:uppercase;
-}
-.search-wrap{max-width:500px;margin:0 auto}
-#search{
-  width:100%;padding:13px 22px;background:rgba(21,5,5,0.9);
-  border:1px solid rgba(255,0,51,0.3);border-radius:2px;
-  color:var(--text);font-size:0.95em;letter-spacing:1px;
-  outline:none;transition:all 0.3s;
-}
-#search::placeholder{color:var(--muted);letter-spacing:2px;font-size:0.85em}
-#search:focus{
-  border-color:var(--red);box-shadow:0 0 25px rgba(255,0,51,0.4);
-  background:rgba(21,5,5,1);
-}
-main{position:relative;z-index:1;padding:30px 15px 50px}
-.grid{
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:16px;max-width:1500px;margin:0 auto;
-}
-.card{
-  position:relative;background:var(--card);
-  border:1px solid rgba(255,0,51,0.15);border-radius:4px;
-  overflow:hidden;cursor:pointer;
-  transition:all 0.35s cubic-bezier(0.4,0,0.2,1);
-}
-.card::before{
-  content:'';position:absolute;inset:0;border:1px solid transparent;
-  border-radius:4px;
-  background:linear-gradient(135deg,var(--red),var(--dark-red)) border-box;
-  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;
-  opacity:0;transition:opacity 0.35s;pointer-events:none;z-index:3;
-}
-.card:hover{
-  transform:translateY(-6px);
-  box-shadow:0 15px 40px rgba(255,0,51,0.35),0 0 20px rgba(255,0,51,0.2);
-}
-.card:hover::before{opacity:1}
-.card .cover{
-  position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;background:#000;
-}
-.card img{
-  width:100%;height:100%;object-fit:cover;display:block;
-  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1),filter 0.4s;
-  filter:grayscale(15%) contrast(1.05);
-}
-.card:hover img{
-  transform:scale(1.1);
-  filter:grayscale(0%) contrast(1.15) brightness(1.05);
-}
-.card .badge{
-  position:absolute;top:10px;right:10px;
-  background:rgba(255,0,51,0.9);color:#fff;
-  padding:4px 10px;font-size:0.7em;font-weight:700;
-  letter-spacing:1px;border-radius:2px;backdrop-filter:blur(5px);z-index:2;
-}
-.card .info{
-  padding:10px 12px;display:flex;justify-content:space-between;
-  align-items:center;font-size:0.72em;color:var(--muted);
-  letter-spacing:1px;
-  background:linear-gradient(180deg,transparent,rgba(255,0,51,0.05));
-}
-.card .info .num{color:var(--red);font-weight:700;letter-spacing:2px}
-.card .info .name{text-transform:uppercase;font-size:0.9em}
-footer{
-  position:relative;z-index:2;text-align:center;
-  padding:40px 20px;border-top:1px solid rgba(255,0,51,0.15);margin-top:40px;
-}
-footer .main-text{
-  font-size:1.1em;font-weight:700;letter-spacing:6px;text-transform:uppercase;
-  background:linear-gradient(135deg,var(--red),var(--red2),var(--dark-red));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-footer .small{
-  color:var(--muted);font-size:0.72em;margin-top:12px;
-  letter-spacing:3px;text-transform:uppercase;
-}
-.lightbox{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,0.98);backdrop-filter:blur(20px);
-  z-index:1000;justify-content:center;align-items:center;
-  flex-direction:column;user-select:none;
-}
-.lightbox.active{display:flex;animation:fadeIn 0.3s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-#lbImg{
-  max-width:95vw;max-height:82vh;object-fit:contain;
-  border-radius:4px;box-shadow:0 0 80px rgba(255,0,51,0.5);
-  animation:zoomIn 0.3s ease;
-}
-@keyframes zoomIn{
-  from{transform:scale(0.94);opacity:0.4}
-  to{transform:scale(1);opacity:1}
-}
-.lb-btn{
-  position:absolute;top:50%;transform:translateY(-50%);
-  background:rgba(255,0,51,0.15);border:1px solid rgba(255,0,51,0.4);
-  color:#fff;font-size:2em;width:56px;height:56px;cursor:pointer;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  line-height:1;transition:all 0.25s;backdrop-filter:blur(10px);
-}
-.lb-btn:hover{
-  background:var(--red);border-color:var(--red);
-  box-shadow:0 0 30px rgba(255,0,51,0.6);
-}
-.lb-prev{left:18px}
-.lb-next{right:18px}
-.lb-close{
-  position:absolute;top:20px;right:20px;
-  background:rgba(255,0,51,0.15);border:1px solid rgba(255,0,51,0.4);
-  color:#fff;font-size:1.3em;width:46px;height:46px;cursor:pointer;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  transition:all 0.25s;backdrop-filter:blur(10px);
-}
-.lb-close:hover{
-  background:var(--red);border-color:var(--red);
-  transform:rotate(90deg);box-shadow:0 0 25px rgba(255,0,51,0.6);
-}
-.lb-counter{
-  position:absolute;bottom:25px;color:#fff;font-size:0.8em;
-  letter-spacing:3px;padding:7px 20px;
-  border:1px solid rgba(255,0,51,0.4);background:rgba(0,0,0,0.7);
-  backdrop-filter:blur(10px);font-weight:600;
-}
-@media(max-width:600px){
-  .grid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px}
-  main{padding:15px 8px 30px}
-  header{padding:30px 15px 20px}
-  h1{letter-spacing:2px}
-  .tagline{letter-spacing:3px}
-  .lb-btn{width:44px;height:44px;font-size:1.5em}
-  .lb-prev{left:8px}
-  .lb-next{right:8px}
-  #lbImg{max-height:78vh}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Hot Gallery | Premium Access</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
-    <h1>Siddik's Simon Kitty</h1>
-    <div class="divider"><span></span><div class="diamond"></div><span></span></div>
-    <p class="tagline">My Beloved</p>
-    <p class="stats" id="stats">Loading</p>
-  </div>
-  <div class="search-wrap">
-    <input type="text" id="search" placeholder="Search gallery">
-  </div>
-</header>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="logo">HOT<span>JAPAN</span></div>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Home</a></li>
+            <li><a href="#">Categories</a></li>
+            <li><a href="#">Premium</a></li>
+            <li><a href="#">Login</a></li>
+        </ul>
+        <div class="burger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+    </nav>
 
-<main>
-  <div id="grid" class="grid"></div>
-</main>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1>Explore Japanese Beauty</h1>
+            <p>High Quality uncensored galleries from unphalash</p>
+            <a href="#gallery" class="btn-main">View Gallery</a>
+        </div>
+    </header>
 
-<footer>
-  <div class="main-text">Siddik's Simon Kitty</div>
-  <div class="small">My Beloved</div>
-</footer>
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery-container">
+        <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="cute">Cute</button>
+            <button class="filter-btn" data-filter="hot">Hot</button>
+            <button class="filter-btn" data-filter="premium">Premium</button>
+        </div>
 
-<div id="lightbox" class="lightbox">
-  <button class="lb-close" id="lbClose">X</button>
-  <button class="lb-btn lb-prev" id="lbPrev">&#8249;</button>
-  <img id="lbImg" src="" alt="">
-  <button class="lb-btn lb-next" id="lbNext">&#8250;</button>
-  <div class="lb-counter" id="lbCounter"></div>
-</div>
+        <div class="image-grid" id="imageGrid">
+            <!-- Images will be loaded here via JS -->
+            <div class="image-card" data-category="hot">
+                <img src="https://via.placeholder.com/400x600" alt="Japanese Model">
+                <div class="overlay">
+                    <span class="badge">Hot</span>
+                    <button class="view-btn">View Full Size</button>
+                </div>
+            </div>
+            <!-- More cards will be added -->
+        </div>
+    </section>
 
-<script>
-const IMGS = [
-HTMLEOF
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 HotJapan Site. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a> | <a href="#">Terms of Use</a>
+        </div>
+    </footer>
 
-echo "HTML হেডার লেখা শেষ। এখন ছবি ঢোকাচ্ছি..."
-
-TOTAL=0
-for d in $(ls -d pornpics_*/ | sort); do
-  for img in $(ls "$d"*.jpg 2>/dev/null | sort); do
-    b64=$(base64 -w 0 "$img")
-    echo "\"data:image/jpeg;base64,$b64\"," >> SIDDIK_ALL.html
-    TOTAL=$((TOTAL+1))
-    if [ $((TOTAL % 100)) -eq 0 ]; then
-      echo "  $TOTAL ছবি ঢুকেছে..."
-    fi
-  done
-done
-
-cat >> SIDDIK_ALL.html << 'JSEOF'
-];
-
-const grid = document.getElementById('grid');
-const searchInput = document.getElementById('search');
-const statsEl = document.getElementById('stats');
-const lb = document.getElementById('lightbox');
-const lbImg = document.getElementById('lbImg');
-const lbCounter = document.getElementById('lbCounter');
-
-statsEl.textContent = IMGS.length + " Images | My Beloved";
-
-IMGS.forEach((src, i) => {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.innerHTML =
-    '<div class="cover">' +
-      '<img src="' + src + '" loading="lazy" alt="Image ' + (i+1) + '">' +
-      '<span class="badge">' + String(i+1).padStart(3,'0') + '</span>' +
-    '</div>' +
-    '<div class="info">' +
-      '<span class="num">' + String(i+1).padStart(4,'0') + '</span>' +
-      '<span class="name">Image</span>' +
-    '</div>';
-  card.addEventListener('click', () => openLB(i));
-  grid.appendChild(card);
-});
-
-let idx = 0;
-
-function openLB(i) {
-  idx = i;
-  update();
-  lb.classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
-
-function update() {
-  lbImg.src = IMGS[idx];
-  lbCounter.textContent = String(idx+1).padStart(4,'0') + ' / ' + String(IMGS.length).padStart(4,'0');
-}
-
-function prev() { idx = (idx - 1 + IMGS.length) % IMGS.length; update(); }
-function next() { idx = (idx + 1) % IMGS.length; update(); }
-
-function closeLB() {
-  lb.classList.remove('active');
-  document.body.style.overflow = '';
-  lbImg.src = '';
-}
-
-document.getElementById('lbClose').addEventListener('click', closeLB);
-document.getElementById('lbPrev').addEventListener('click', (e) => { e.stopPropagation(); prev(); });
-document.getElementById('lbNext').addEventListener('click', (e) => { e.stopPropagation(); next(); });
-lb.addEventListener('click', (e) => { if (e.target === lb) closeLB(); });
-
-document.addEventListener('keydown', (e) => {
-  if (!lb.classList.contains('active')) return;
-  if (e.key === 'ArrowLeft') prev();
-  if (e.key === 'ArrowRight') next();
-  if (e.key === 'Escape') closeLB();
-});
-
-let touchX = 0;
-lb.addEventListener('touchstart', (e) => { touchX = e.changedTouches[0].screenX; }, { passive: true });
-lb.addEventListener('touchend', (e) => {
-  const d = e.changedTouches[0].screenX - touchX;
-  if (Math.abs(d) > 50) { if (d > 0) prev(); else next(); }
-}, { passive: true });
-
-searchInput.addEventListener('input', (e) => {
-  const q = e.target.value.toLowerCase().trim();
-  const cards = grid.querySelectorAll('.card');
-  cards.forEach(c => {
-    const num = c.querySelector('.num').textContent;
-    c.style.display = (!q || num.includes(q)) ? '' : 'none';
-  });
-});
-JSEOF
-
-echo ""
-echo "সম্পন্ন!"
-ls -lh SIDDIK_ALL.html
+</body>
+</html>
