@@ -5,64 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>নূর | ইসলামিক গ্যালারি</title>
     <link rel="stylesheet" href="style.css">
-    <!-- গুগল ফন্ট -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Hind+Siliguri:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Hind Siliguri for Bangla, Amiri for Arabic-style headings -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Hind+Siliguri:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- হেডার সেকশন -->
+    <!-- হেডার -->
     <header>
         <div class="logo">
-            <h1>نور</h1>
-            <span>Islamic Gallery</span>
+            <span class="logo-arabic">نور</span>
+            <span class="logo-bangla">ইসলামিক গ্যালারি</span>
         </div>
         <nav>
             <a href="#home" class="active">হোম</a>
-            <a href="#gallery">গ্যালারি</a>
+            <a href="#gallery">ছবি</a>
             <a href="#videos">ভিডিও</a>
         </nav>
     </header>
 
-    <!-- হিরো সেকশন -->
+    <!-- হিরো সেকশন (স্ট্যাটিক ইমেজ ছাড়া, গ্রেডিয়েন্ট) -->
     <section id="home" class="hero">
         <div class="hero-content">
-            <h2>শান্তি ও সৌন্দর্যের সন্ধানে</h2>
+            <h1>শান্তি ও সৌন্দর্যের সন্ধানে</h1>
             <p>ইসলামিক স্থাপত্য, ক্যালিগ্রাফি এবং প্রকৃতির প্রশান্তিময় মুহূর্তের এক ডিজিটাল সংগ্রহ।</p>
             <a href="#gallery" class="btn">গ্যালারি দেখুন</a>
         </div>
     </section>
 
-    <!-- গ্যালারি সেকশন -->
+    <!-- ছবির গ্যালারি -->
     <section id="gallery" class="section">
         <div class="section-title">
-            <h3>ছবির সংগ্রহ</h3>
+            <h2>ছবির সংগ্রহ</h2>
             <div class="underline"></div>
         </div>
-        
-        <!-- এখানে জাভাস্ক্রিপ্ট ছবি লোড করবে -->
         <div class="gallery-grid" id="photo-gallery">
-            <!-- ছবি এখানে আসবে -->
+            <!-- ছবি এখানে জাভাস্ক্রিপ্ট দিয়ে লোড হবে -->
         </div>
-        
         <div class="load-more">
-            <button id="load-more-btn" class="btn-outline">আরও লোড করুন</button>
+            <button id="load-more-photos" class="btn-outline">আরও ছবি</button>
         </div>
     </section>
 
-    <!-- ভিডিও সেকশন -->
+    <!-- ভিডিও গ্যালারি -->
     <section id="videos" class="section bg-alt">
         <div class="section-title">
-            <h3>ভিডিও সংগ্রহ</h3>
+            <h2>ভিডিও সংগ্রহ</h2>
             <div class="underline"></div>
         </div>
-        
-        <!-- এখানে জাভাস্ক্রিপ্ট ভিডিও লোড করবে -->
         <div class="video-grid" id="video-gallery">
-            <!-- ভিডিও এখানে আসবে -->
+            <!-- ভিডিও এখানে জাভাস্ক্রিপ্ট দিয়ে লোড হবে -->
         </div>
-        
         <div class="load-more">
-            <button id="load-more-video-btn" class="btn-outline">আরও ভিডিও</button>
+            <button id="load-more-videos" class="btn-outline">আরও ভিডিও</button>
         </div>
     </section>
 
